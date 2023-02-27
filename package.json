@@ -1,0 +1,27 @@
+{
+  "name": "mongo-fetch",
+  "version": "1.0.0",
+  "description": "Fetch-based Mongo Client for the Edge (Including Cloudflare Workers, Vercel Edge Functions, Deno, etc), the Browser, or Node that is API Compatible with the official `mongodb` NodeJS driver, and can hit the official Mongo Atlas Data API, or the the [Mongo Fetch Proxy](https://github.com/drivly/mongo-data-api)",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drivly/mongo-fetch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drivly/mongo-fetch/issues"
+  },
+  "homepage": "https://github.com/drivly/mongo-fetch#readme",
+  "dependencies": {
+    "@drivly/mongo-fetch-api": "^0.1.2",
+    "ava": "^5.2.0",
+    "bson": "^5.0.1",
+    "cross-fetch": "^3.1.5",
+    "mongodb": "^5.1.0"
+  }
+}

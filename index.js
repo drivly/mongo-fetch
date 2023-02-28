@@ -40,19 +40,19 @@ export class MongoFetchClient {
 
     const cacheKey = `${action}-${JSON.stringify(command)}`
 
-    const cache = globalThis?.caches?..default
+    // const cache = globalThis?.caches?.default
 
-    if (this.cacheTtl && globalThis.WebSocketPair) {
-      // We're running inside a cloudflare worker.
-      // We can use the cache API to cache the results of our requests.
-      const cachedResponse = await cache.match(
-        `https://cache.api/${cacheKey}`
-      )
+    // if (this.cacheTtl && globalThis.WebSocketPair) {
+    //   // We're running inside a cloudflare worker.
+    //   // We can use the cache API to cache the results of our requests.
+    //   const cachedResponse = await cache.match(
+    //     `https://cache.api/${cacheKey}`
+    //   )
 
-      if (cachedResponse) {
-        return EJSON.parse(await cachedResponse.text())
-      }
-    }
+    //   if (cachedResponse) {
+    //     return EJSON.parse(await cachedResponse.text())
+    //   }
+    // }
 
     const response = await fetch(url, {
       method: 'POST',
@@ -71,22 +71,22 @@ export class MongoFetchClient {
       throw error
     }
 
-    if (this.cacheTtl && globalThis?.WebSocketPair) {
-      const ttl = cacheTTL || this.cacheTtl
-      const seconds = this.parseTTL(ttl)
+    // if (this.cacheTtl && globalThis?.WebSocketPair) {
+    //   const ttl = cacheTTL || this.cacheTtl
+    //   const seconds = this.parseTTL(ttl)
 
-      const body = await response.clone().json()
+    //   const body = await response.clone().json()
 
-      await cache.put(
-        `https://cache.api/${cacheKey}`,
-        new Response(JSON.stringify(body), {
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': `max-age=${seconds}`
-          }
-        })
-      )
-    }
+    //   await cache.put(
+    //     `https://cache.api/${cacheKey}`,
+    //     new Response(JSON.stringify(body), {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Cache-Control': `max-age=${seconds}`
+    //       }
+    //     })
+    //   )
+    // }
 
     if (response.headers.get('content-type') === 'application/ejson') {
       return EJSON.parse(await response.text())

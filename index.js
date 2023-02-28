@@ -1,7 +1,6 @@
 // Mongo Data API client that tries its best to be a drop-in replacement for the official MongoDB Node.js driver.
 import fetch from 'cross-fetch'
 import { EJSON } from 'bson'
-import { MongoError } from 'mongodb'
 
 export class MongoFetchClient {
   constructor(dataSource, options) {
@@ -66,7 +65,7 @@ export class MongoFetchClient {
 
     if (!response.ok) {
       const body = await response.json()
-      const error = new MongoError(body.error)
+      const error = new Error(body.error)
       error.code = body.error.split(' ')[0]
       throw error
     }

@@ -40,4 +40,9 @@ test('Generate _id on insert if document is missing one', async t => {
     .insertOne({ hello: 'world' })
 
   t.true(document.insertedId instanceof ObjectId)
+
+  await client
+    .db('test')
+    .collection('mongo-fetch-client')
+    .deleteOne({ _id: document.insertedId })
 })

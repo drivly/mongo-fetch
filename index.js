@@ -34,13 +34,27 @@ export class MongoFetchClient {
     return new MongoFetchDatabase(this, name)
   }
 
+  async listDatabases() {
+    const command = {
+      database: 'dummy',
+      collection: ''
+    }
+
+    const response = await this._executeCommand(
+      'listDatabases',
+      command
+    )
+
+    return response.databases
+  }
+
   // Execute command will allow us to unify all of our operations to one single API call.
   // This is a private method, and should not be used directly.
   async _executeCommand(action, options) {
     const command = options
     command.dataSource = this.dataSource
 
-    const url = `${this.url}/v1/action/${action}`
+    const url = `${this.url.replace('/v1', '')}/v1/action/${action}`
 
     const cacheKey = `${action}-${JSON.stringify(command)}`
 
@@ -62,7 +76,7 @@ export class MongoFetchClient {
 
     const response = await this.fetch(url, {
       method: 'POST',
-      body: JSON.stringify(command),
+      body: EJSON.stringify(command),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -142,6 +156,19 @@ class MongoFetchDatabase {
     this.name = name
   }
 
+  async listCollections() {
+    const command = {
+      database: this.name
+    }
+
+    const response = await this.client._executeCommand(
+      'listCollections',
+      command
+    )
+
+    return response.collections
+  }
+
   collection(name) {
     return new MongoFetchCollection(this.client, this, name)
   }
@@ -188,6 +215,26 @@ class MongoFetchCollection {
     )
 
     return response.document
+  }
+
+  async countDocuments(filter) {
+    // @drivly/mongo-fetch-api exclusive method.
+    // Atlas doesn't support this yet.
+    // Recommended filter is { _id: { $exists: true } } to count all documents.
+    // This allows for use of the index on _id.
+
+    const command = {
+      database: this.database.name,
+      collection: this.name,
+      filter: filter || { _id: { $exists: true } } // lets just put a default if they don't provide one.
+    }
+
+    const response = await this.client._executeCommand(
+      'countDocuments',
+      command
+    )
+
+    return response.count
   }
 
   async insertOne(document) {

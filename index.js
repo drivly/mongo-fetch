@@ -7,6 +7,11 @@ export class MongoFetchClient {
     this.dataSource = dataSource
     this.url = options.url
     this.apiKey = options.apiKey
+    this.fetch = options.fetch || globalThis.fetch || fetch
+
+    if (!this.fetch) {
+      throw new Error('No fetch implementation found. Please provide one in the options. (e.g. { fetch: require(\'node-fetch\') })')
+    }
 
     this.cache = {}
 
@@ -31,7 +36,7 @@ export class MongoFetchClient {
 
   // Execute command will allow us to unify all of our operations to one single API call.
   // This is a private method, and should not be used directly.
-  async _executeCommand(action, options, cacheTTL) {
+  async _executeCommand(action, options) {
     const command = options
     command.dataSource = this.dataSource
 
@@ -53,7 +58,9 @@ export class MongoFetchClient {
     //   }
     // }
 
-    const response = await fetch(url, {
+    delete command.options
+
+    const response = await this.fetch(url, {
       method: 'POST',
       body: JSON.stringify(command),
       headers: {
@@ -147,35 +154,32 @@ class MongoFetchCollection {
     this.name = name
   }
 
-  find(filter, options) {
+  find(filter) {
+    const command = {
+      database: this.database.name,
+      collection: this.name,
+      filter
+    }
+
+    return new MongoFetchCursor(this.client, this.database, this, filter)
+  }
+
+  aggregate(pipeline) {
+    const command = {
+      database: this.database.name,
+      collection: this.name,
+      pipeline
+    }
+
+    return new MongoFetchAggregateCursor(this.client, this.database, this, pipeline)
+  }
+
+  async findOne(filter, projection) {
     const command = {
       database: this.database.name,
       collection: this.name,
       filter,
-      options
-    }
-
-    return new MongoFetchCursor(this.client, this.database, this, filter, options)
-  }
-
-  aggregate(pipeline, options) {
-    const command = {
-      database: this.database.name,
-      collection: this.name,
-      pipeline,
-      options
-    }
-
-    return new MongoFetchAggregateCursor(this.client, this.database, this, pipeline, options)
-  }
-
-  async findOne(filter, projection, options) {
-    const command = {
-      database: this.database.name,
-      collection: this.name,
-      filter,
-      projection,
-      options
+      projection
     }
 
     const response = await this.client._executeCommand(
@@ -238,13 +242,12 @@ class MongoFetchCollection {
     return response
   }
 
-  async updateOne(filter, update, options) {
+  async updateOne(filter, update) {
     const command = {
       database: this.database.name,
       collection: this.name,
       filter,
-      update,
-      options
+      update
     }
 
     const response = await this.client._executeCommand(
@@ -262,8 +265,7 @@ class MongoFetchCollection {
       database: this.database.name,
       collection: this.name,
       filter,
-      update,
-      options
+      update
     }
 
     const response = await this.client._executeCommand(
@@ -278,12 +280,12 @@ class MongoFetchCollection {
 }
 
 class MongoFetchCursor {
-  constructor(client, database, collection, filter, options) {
+  constructor(client, database, collection, filter) {
     this.client = client
     this.database = database
     this.collection = collection
     this.filter = filter
-    this.options = options || {}
+    this.options = {}
 
     this.args = {}
     
@@ -295,7 +297,6 @@ class MongoFetchCursor {
       database: this.database.name,
       collection: this.collection.name,
       filter: this.filter,
-      options: this.options,
       ...this.args
     }
 
@@ -342,12 +343,12 @@ class MongoFetchCursor {
 }
 
 class MongoFetchAggregateCursor {
-  constructor(client, database, collection, pipeline, options) {
+  constructor(client, database, collection, pipeline) {
     this.client = client
     this.database = database
     this.collection = collection
     this.pipeline = pipeline
-    this.options = options || {}
+    this.options = {}
 
     this.args = {}
     
@@ -359,7 +360,6 @@ class MongoFetchAggregateCursor {
       database: this.database.name,
       collection: this.collection.name,
       pipeline: this.pipeline,
-      options: this.options,
       ...this.args
     }
 

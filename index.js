@@ -39,7 +39,7 @@ export class MongoFetchClient {
       collection: ''
     }
 
-    const response = await this._executeCommand(
+    const response = await this.executeCommand(
       'listDatabases',
       command
     )
@@ -48,8 +48,8 @@ export class MongoFetchClient {
   }
 
   // Execute command will allow us to unify all of our operations to one single API call.
-  // This is a private method, and should not be used directly.
-  async _executeCommand(action, options) {
+  // This is a private method, and should not be used directly.1
+  async executeCommand(action, options) {
     const command = options
     command.dataSource = this.dataSource
 
@@ -73,7 +73,7 @@ export class MongoFetchClient {
 
     delete command.options
 
-    const response = await this.fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       body: EJSON.stringify(command),
       headers: {
@@ -160,7 +160,7 @@ class MongoFetchDatabase {
       database: this.name
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'listCollections',
       command
     )
@@ -208,7 +208,7 @@ class MongoFetchCollection {
       projection
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'findOne',
       command
     )
@@ -228,7 +228,7 @@ class MongoFetchCollection {
       filter: filter || { _id: { $exists: true } } // lets just put a default if they don't provide one.
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'countDocuments',
       command
     )
@@ -244,7 +244,7 @@ class MongoFetchCollection {
       document
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'insertOne',
       command
     )
@@ -261,7 +261,7 @@ class MongoFetchCollection {
       filter
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'deleteOne',
       command
     )
@@ -278,7 +278,7 @@ class MongoFetchCollection {
       filter
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'deleteMany',
       command
     )
@@ -296,7 +296,7 @@ class MongoFetchCollection {
       update
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'updateOne',
       command
     )
@@ -314,7 +314,7 @@ class MongoFetchCollection {
       update
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'updateMany',
       command
     )
@@ -346,7 +346,7 @@ class MongoFetchCursor {
       ...this.args
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'find',
       command
     )
@@ -409,7 +409,7 @@ class MongoFetchAggregateCursor {
       ...this.args
     }
 
-    const response = await this.client._executeCommand(
+    const response = await this.client.executeCommand(
       'aggregate',
       command
     )

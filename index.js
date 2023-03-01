@@ -1,5 +1,4 @@
 // Mongo Data API client that tries its best to be a drop-in replacement for the official MongoDB Node.js driver.
-import fetch from 'cross-fetch'
 import { EJSON } from 'bson'
 
 export class MongoFetchClient {
@@ -7,7 +6,7 @@ export class MongoFetchClient {
     this.dataSource = dataSource
     this.url = options.url
     this.apiKey = options.apiKey
-    this.fetch = options.fetch || globalThis.fetch || fetch
+    this.fetch = options.fetch || globalThis.fetch
 
     if (!this.fetch) {
       throw new Error('No fetch implementation found. Please provide one in the options. (e.g. { fetch: require(\'node-fetch\') })')

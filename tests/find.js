@@ -6,10 +6,13 @@ import { ObjectId } from 'bson'
 import { startService } from '@drivly/mongo-fetch-api'
 
 test.before(async t => {
-  const client = new MongoFetchClient('logs', {
-    url: 'http://localhost:3000/api',
-    apiKey: 'secret'
-  })
+  const client = new MongoFetchClient(
+    'api',
+    {
+      url: 'https://mda.fly.dev/api',
+      apiKey: '623addf0c0e2e165f34510bc60b2814c'
+    }
+  )
 
   t.context.client = client
 

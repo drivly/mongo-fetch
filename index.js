@@ -254,6 +254,24 @@ class MongoFetchCollection {
     return response
   }
 
+  async insertMany(documents) {
+    // No need for a cursor as its a straight API request.
+    const command = {
+      database: this.database.name,
+      collection: this.name,
+      documents
+    }
+
+    const response = await this.client.executeCommand(
+      'insertMany',
+      command
+    )
+
+    response.acknowledged = true
+
+    return response
+  }
+
   async deleteOne(filter) {
     const command = {
       database: this.database.name,

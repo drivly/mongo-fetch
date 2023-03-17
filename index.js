@@ -236,6 +236,23 @@ class MongoFetchCollection {
     return response.count
   }
 
+  async estimatedDocumentCount() {
+    // @drivly/mongo-fetch-api exclusive method.
+    // Atlas doesn't support this yet.
+
+    const command = {
+      database: this.database.name,
+      collection: this.name
+    }
+
+    const response = await this.client.executeCommand(
+      'estimatedDocumentCount',
+      command
+    )
+
+    return response.count
+  }
+
   async insertOne(document) {
     // No need for a cursor as its a straight API request.
     const command = {

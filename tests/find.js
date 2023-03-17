@@ -8,7 +8,7 @@ import { startService } from '@drivly/mongo-fetch-api'
 test.before(async t => {
   const client = new MongoFetchClient(
     'api',
-    {
+    { 
       url: 'http://localhost:3000/api',
       apiKey: 'secret'
     }

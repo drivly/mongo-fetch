@@ -5,7 +5,7 @@ This client is a HTTP adapter for the Data API, allowing you to access data as i
 ## Usage
 
 ```js
-import { MongoFetchClient } from 'mongo-fetch-client'
+import { MongoFetchClient } from 'mongo-fetch'
 
 const client = new MongoFetchClient(
   'clusterName', // The cluster name in our self-hosted Data API, otherwise this is the dataSource.

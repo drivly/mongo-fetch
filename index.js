@@ -123,7 +123,7 @@ export class MongoFetchClient {
     while (match != null) {
       const number = parseInt(match[1])
       const unit = match[2]
-
+      
       switch (unit) {
         case 's':
           seconds += number
@@ -144,7 +144,7 @@ export class MongoFetchClient {
           throw new Error(`Invalid TTL unit: ${unit}`)
       }
     }
-
+    
     return seconds
   }
 }

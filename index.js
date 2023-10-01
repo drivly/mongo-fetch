@@ -84,9 +84,9 @@ export class MongoFetchClient {
     })
 
     if (!response.ok) {
-      const body = await response.json()
-      const error = new Error(body.error)
-      error.code = body.error.split(' ')[0]
+      const body = await response.text()
+      const error = new Error(body)
+      // error.code = body.error.split(' ')[0]
       throw error
     }
 

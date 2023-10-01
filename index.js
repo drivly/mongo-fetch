@@ -84,9 +84,9 @@ export class MongoFetchClient {
     })
 
     if (!response.ok) {
-      const body = await response.json()
-      const error = new Error(body.error)
-      error.code = body.error.split(' ')[0]
+      const body = await response.text()
+      const error = new Error(body)
+      // error.code = body.error.split(' ')[0]
       throw error
     }
 
@@ -323,12 +323,13 @@ class MongoFetchCollection {
     return response
   }
 
-  async updateOne(filter, update) {
+  async updateOne(filter, update, {upsert} = {}) {
     const command = {
       database: this.database.name,
       collection: this.name,
       filter,
-      update
+      update,
+      upsert
     }
 
     const response = await this.client.executeCommand(
@@ -341,12 +342,13 @@ class MongoFetchCollection {
     return response
   }
 
-  async updateMany(filter, update) {
+  async updateMany(filter, update, {upsert} = {}) {
     const command = {
       database: this.database.name,
       collection: this.name,
       filter,
-      update
+      update,
+      upsert
     }
 
     const response = await this.client.executeCommand(
